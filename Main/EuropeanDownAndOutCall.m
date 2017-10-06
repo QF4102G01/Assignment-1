@@ -1,8 +1,11 @@
 function [cdo] = EuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma)
+  %prepare parameters
   lambda = (r - q) / (sigma ^ 2) - 0.5;
   y = (log(H ^ 2 * X ./ S0) + lambda * sigma ^ 2 * tau) / (sigma * tau ^ 0.5);
   x1 = (log(S0./H) + lambda * sigma ^ 2 * tau) / (sigma * tau ^ 0.5);
   y1 = (-log(S0./H) + lambda * sigma ^ 2 * tau) / (sigma * tau ^ 0.5);
+  
+  %prepare vanilla call option price
   c = EuropeanVanillaCall(S0, q, X, tau, r, sigma);
   
   if H <=  X

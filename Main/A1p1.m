@@ -1,6 +1,6 @@
 format long
 
-%obtain the parameters
+%prepare the parameters
 S0 = 7:0.1:10;
 q = 0.00;
 H = 7;

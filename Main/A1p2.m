@@ -1,12 +1,12 @@
 format long
 
-%obtain the parameters
+%prepare the parameters
 tau = 0.5;
 S0 = 1;
 sigma = 0.4;
 q = 0.02;
 r = 0.04;
-plotting_index = 200:200:20000
+plotting_index = 200:200:20000;
 
 %obtain the newly issued BTM floating lookback put option values
 BTM_floatingLBP_ni_values = 200:200:20000;
