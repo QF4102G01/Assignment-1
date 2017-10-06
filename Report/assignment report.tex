@@ -38,13 +38,16 @@
 % for import graphics
 \usepackage{graphicx}
 
+% include algorithm package
+\usepackage[]{algorithm2e}
+
 % change font to times new roman
 %\usepackage{times}
 
 % title details
 \title{QF4102 Financial Modelling and Computation Assignment 1}
 %\date{}
-\author{Wang Zexin, Chen Penghao}
+\author{G01 Wang Zexin, Chen Penghao}
 
 %~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 \begin{document}
@@ -54,9 +57,9 @@
 % make a new page
 \newpage
 
-\section{Eurodollar Futures and Deferred IRS}
+\section{Question 1}
 \subsection*{\emph{Statement of the problem}}
-A series of prices of Eurodollar futures contracts and their expiry dates are collected on a chosen day and used in the construction of forward LIBOR term structures. The forward LIBOR term structures are then used to obtain the swap rate for deferred $N$-year interest rate swap on yearly exchanges.
+Write a Matlab function for the exact solution of a European down-and-out call option. Your function must be able to \textbf{work with the initial underlier price $S_{0}$ in a vector form}.
 \subsection{Data collection and preparation}
 The business day chosen, day X is 28 Feb, 2017 within the 9-day period. The settlement prices of Eurodollar futures contracts which expire in March 2017, June 2017, September 2017, December 2017, March 2018, \dots , up to December 2026, (i.e. 10 years into the future) have been collected from the CME group website into the \emph{raw\_data} sheet of the excel file.\\
 A screenshot of the webpage has been obtained and shown below.
@@ -145,7 +148,7 @@ The formula $r_{i} = \frac{v_{i}-v_{i-1}}{v_{i-1}}$ can be used to find the stoc
   \caption{Covariance Matrix of the stock returns and Expected returns vector}
 \end{figure}
 
-\subsection{Minimum Variance Point Portfolio And An Efficient Portfolio}
+\subsection{Newly issued European floating strike lookback put options}
 Just like what we did in a previous tutorial, a minimum variance portfolio, or in short MVP, can be obtained from the covariance matrix directly by equation (3):
 $$ \textbf{w}_{\text{MVP}} = \frac{\textbf{C}^{-1}\mathrm{1}}{\mathrm{1}^{T}\textbf{C}^{-1}\mathrm{1}} $$
 \begin{equation}
@@ -163,14 +166,43 @@ $$ \textbf{w}_{\text{efficient}} = \frac{\textbf{C}^{-1}\mathrm{\mu}}{\mathrm{1}
 As specified in the comments in the VBA functions, I have also checked for the number of rows and columns of the covariance matrix as well as the expected returns vector. If their dimensions do not match our expectations, a message box is used to inform the user. Assumption that the expected returns vector passed in is a column vector instead of a row vector has been made.
 \newpage
 
-\subsection{Efficient Portfolios}
-The resultant portfolio weights placed in the \emph{efficient\_portfolios} sheet are as follows:
-\begin{figure}[h]
-	\centering
-	\includegraphics[scale=0.5]{biu.PNG}
-	\caption{Minimum variance portfolio and efficient portfolio weights}
-\end{figure}
-\\[6mm]By adding up all the weights in one portfolio, we can do a quick check upon whether the normalization has been done correctly or not. As both of their weights add up to 1, we are certain that the normalization process has been done correctly. Checking upon other features of the expected returns and variances will be left to the graphing of efficient frontier.\\
+\subsection{Not newly issued European floating strike lookback put options}
+In the previous case we could take advantage of the characteristic of lookback option in which all the maximum values correspond to the potential stock prices in the binomial tree. However in this case, since the option is not newly issued and we may have a previous running max which does not correspond to any of the potential stock prices, we cannot use the single state variable to fully represent both the current stock price and the running max. Therefore the following adjustment is needed:
+\begin{itemize}
+	\item Compare $\tilde{A}$ and $S_{0}$, if $\tilde{A}$ is smaller, treat this like a newly issued lookback option and use the previous case's algorithm
+	\item let $x_{0} = \ln \frac{\tilde{A}}{S_{0}}$
+	\item Determine for an integer $j$ such that $j{^{\Delta}x} < x_{0} < (j+1){^{\Delta}x}$
+	\item Grow two separate linear trees from $x_{0}^{j}$ and $x_{0}^{j+1}$
+	\item Perform the backward time binomial updates
+	\item Interpolate between two option values at the roots to obtain option premium
+\end{itemize}
+Below is an algorithm developed based on this idea:
+
+\begin{algorithm}[H]
+ \KwData{$r, \sigma, S_{0}, \tau, N, q, \tilde{A}$}
+ \KwResult{$p_{0}$, Option Premium}
+ Initialization\;
+ let $\delta S = \frac{2S}{M}$ be the underlying asset price difference \;
+ For stability, let $\delta t = \frac{0.9}{\sigma^{2}M^{2}}$ be the time difference\;
+ $N = \frac{T}{\delta t}$\;
+ We define the following vectors:\\
+ $\alpha_{i} = \frac{1}{2}\delta t(\sigma^{2}i^{2} - ri), \beta_{i} = 1-\delta t(\sigma^{2}i^{2} + r), \gamma_{i} = \frac{1}{2}\delta t(\sigma^{2}i^{2} + ri), \forall \, 1 \le i \le M$\;
+ Set the boundary conditions\;
+ \For {i = 1 \dots M} {
+  $V_{i, N} = f(i\,\delta S)$\;
+ }
+ \For {j = 1 \dots N} {
+  $V_{M, j} = f(2S)e^{-r(N-j)\delta t}$\;
+ }
+ \For {j = N \dots 1} {
+  \For {i = 2 \dots M-1} {
+   $V_{i, j-1} = \sigma_{i}V_{i-1,j} + \beta_{i}V_{i,j} + \gamma_{i}V_{i+1,j} $\;
+  }
+ }
+ $V_{\frac{M}{2},1}$ is the output value for option premium\;
+\caption{One factor Explicit Euler scheme FDM algorithm}
+\end{algorithm}
+By adding up all the weights in one portfolio, we can do a quick check upon whether the normalization has been done correctly or not. As both of their weights add up to 1, we are certain that the normalization process has been done correctly. Checking upon other features of the expected returns and variances will be left to the graphing of efficient frontier.\\
 After we have obtained the MVP and efficient portfolios, a convex set of 25 points can be computed based on different $\lambda$s assigned to the MVP and efficient portfolio. By the \textbf{Two-Fund Theorem}, we can use equation (5) to compute a series of portfolio weights on the efficient frontier when adjusting $\lambda$ from 0 to 1.
 \begin{equation}
 \begin{split}
