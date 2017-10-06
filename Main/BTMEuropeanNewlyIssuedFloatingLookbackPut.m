@@ -1,13 +1,13 @@
-function optionPrice = BTMEuropeanFloatingLookbackPut(S0, sigma, q, r, tau, N)
+function optionPrice = BTMEuropeanNewlyIssuedFloatingLookbackPut(S0, sigma, q, r, tau, N)
 	deltaT = tau / N;
 	deltaX = sigma * deltaT ^ 0.5;
 	u = exp(deltaX);
 	d = 1 / u;
-	p = (exp((r-q)*deltaT)-d) / (u-d);
-	discountFactor = exp(-r*deltaT);
+	p = (exp(deltaT * (r-q)) - d) / (u - d);
+	discountFactor = exp(-r * deltaT);
 	k = 0 : 1 : N;
 	kshift = 1;
-	W(k + kshift) = exp(k.*deltaX) - 1;
+	W(k + kshift) = exp(k * deltaX) - 1;
 	for i = N-1 : -1 : 0
 		k = 1 : 1 : i;
 		ZerothElement = discountFactor * (p * u * W(0 + kshift) + (1-p) * d * W(1 + kshift));
