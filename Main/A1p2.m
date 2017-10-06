@@ -6,6 +6,7 @@ S0 = 1;
 sigma = 0.4;
 q = 0.02;
 r = 0.04;
+plotting_index = 200:200:20000
 
 %obtain the newly issued BTM floating lookback put option values
 BTM_floatingLBP_ni_values = 200:200:20000;
@@ -14,8 +15,7 @@ for N = 200:200:20000
 end
 
 %plot the option values against N
-N_plot = 200:200:20000;
-plot(N_plot, BTM_floatingLBP_ni_values);
+plot(plotting_index, BTM_floatingLBP_ni_values);
 
 %redo with previously issued BTM floating lookback with running maximum of
 %1.3 dollars
@@ -26,5 +26,4 @@ for N = 200:200:20000
 end
 
 %plot the option values against N
-N_plot = 200:200:20000;
-plot(N_plot, BTM_floatingLBP_pi_values);
+plot(plotting_index, BTM_floatingLBP_pi_values);
