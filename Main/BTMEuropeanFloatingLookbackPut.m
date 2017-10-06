@@ -1,4 +1,4 @@
-function optionPrice = BTMEuropeanNewlyIssuedFloatingLookbackPut(S0, sigma, q, r, tau, N)
+function optionPrice = BTMEuropeanFloatingLookbackPut(S0, sigma, q, r, tau, N)
 	deltaT = tau / N;
 	deltaX = sigma * deltaT ^ 0.5;
 	u = exp(deltaX);
