@@ -1,3 +1,6 @@
+%Group members: Chen Penghao, Wang Zexin
+%Group number: G01
+
 function [cdo] = EuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma)
   %prepare parameters
   lambda = (r - q) / (sigma ^ 2) - 0.5;

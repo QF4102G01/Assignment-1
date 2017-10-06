@@ -1,3 +1,6 @@
+%Group members: Chen Penghao, Wang Zexin
+%Group number: G01
+
 function [cdo] = BTMEuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma, N)
     %prepare dt, dx and hence discount factor
     dt = tau / N;

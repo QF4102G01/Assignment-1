@@ -1,3 +1,6 @@
+%Group members: Chen Penghao, Wang Zexin
+%Group number: G01
+
 format long
 
 %prepare the parameters

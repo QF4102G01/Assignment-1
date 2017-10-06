@@ -1,3 +1,6 @@
+%Group members: Chen Penghao, Wang Zexin
+%Group number: G01
+
 function optionPrice = BTMEuropeanFloatingLookbackPut(S0, sigma, q, r, tau, N)
     %prepare deltaX and discount factor
 	deltaT = tau / N;
