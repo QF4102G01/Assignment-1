@@ -1,14 +1,22 @@
+%Group members: Chen Penghao, Wang Zexin
+%Group number: G01
+
 function [cdo] = BTMEuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma, N)
+    %prepare dt, dx and hence discount factor
     dt = tau / N;
     dx = sigma * sqrt(dt);
+    df = exp(-r * dt);
+    
+    %prepare u, d and hence p
     u = exp(dx);
     d = 1 / u;
-    df = exp(-r * dt);
     p = (exp((r-q) * dt) - d) / (u - d);
     
+    %initialization
     j = 0 : 1 : N; jshift = 1;
     V(j + jshift) = max(S0 .* u .^ (j .* 2 - N) - X, 0);
     
+    %backward iteration
     for n = N-1 : -1 : 0
         j = 0 : 1 : n;
         V = df * ( p * V(j+1+jshift) + (1-p) * V(j+jshift) );
@@ -16,5 +24,6 @@ function [cdo] = BTMEuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma, N)
         V(0 + jshift : boundaryJ + jshift) = 0;
     end
     
+    %obtain option value
     cdo = V(0 + jshift);
 end
