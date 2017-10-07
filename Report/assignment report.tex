@@ -182,25 +182,23 @@ Below is an algorithm developed based on this idea:
  \KwData{$r, \sigma, S_{0}, \tau, N, q, \tilde{A}$}
  \KwResult{$p_{0}$, Option Premium}
  Initialization\;
- let $\delta S = \frac{2S}{M}$ be the underlying asset price difference \;
- For stability, let $\delta t = \frac{0.9}{\sigma^{2}M^{2}}$ be the time difference\;
+ let $x_{0} = \ln \frac{\tilde{A}}{S_{0}}$ be the initial  of the single state\;
+ Choose integer $j$ such that $j{^{\Delta}x} < x_{0} < (j+1){^{\Delta}x}$\;
  $N = \frac{T}{\delta t}$\;
- We define the following vectors:\\
- $\alpha_{i} = \frac{1}{2}\delta t(\sigma^{2}i^{2} - ri), \beta_{i} = 1-\delta t(\sigma^{2}i^{2} + r), \gamma_{i} = \frac{1}{2}\delta t(\sigma^{2}i^{2} + ri), \forall \, 1 \le i \le M$\;
  Set the boundary conditions\;
- \For {i = 1 \dots M} {
-  $V_{i, N} = f(i\,\delta S)$\;
+ \For {i = $\max(j-N, 0)$ \dots $j+N+1$} {
+  $W_{N}^{i} = \exp(x_{N}^{i}) - 1$\;
  }
- \For {j = 1 \dots N} {
-  $V_{M, j} = f(2S)e^{-r(N-j)\delta t}$\;
- }
- \For {j = N \dots 1} {
-  \For {i = 2 \dots M-1} {
-   $V_{i, j-1} = \sigma_{i}V_{i-1,j} + \beta_{i}V_{i,j} + \gamma_{i}V_{i+1,j} $\;
+ \For {n = N-1, N-2, \dots 0} {
+  \If {$j - n \le 0$} {
+    $W_{n}^{0} = exp(-r{^{\Delta}t})[puW_{n+1}^{0}+(1-p)dW_{n+1}^{1}]$\;
+  }
+  \For {k = $\max(j-n,1), \dots, j + n + 1$} {
+    $W_{n}^{k} = exp(-r{^{\Delta}t})[puW_{n+1}^{k-1}+(1-p)dW_{n+1}^{k+1}]$\;
   }
  }
- $V_{\frac{M}{2},1}$ is the output value for option premium\;
-\caption{One factor Explicit Euler scheme FDM algorithm}
+ $V_{0}$ is approximated by interpolating between $S_{0}W_{0}^{j}$ and $S_{0}W_{0}^{j+1}$\;
+\caption{Algorithm for pricing floating strike lookback put}
 \end{algorithm}
 By adding up all the weights in one portfolio, we can do a quick check upon whether the normalization has been done correctly or not. As both of their weights add up to 1, we are certain that the normalization process has been done correctly. Checking upon other features of the expected returns and variances will be left to the graphing of efficient frontier.\\
 After we have obtained the MVP and efficient portfolios, a convex set of 25 points can be computed based on different $\lambda$s assigned to the MVP and efficient portfolio. By the \textbf{Two-Fund Theorem}, we can use equation (5) to compute a series of portfolio weights on the efficient frontier when adjusting $\lambda$ from 0 to 1.
