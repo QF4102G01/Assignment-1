@@ -29,15 +29,15 @@ plot(S0, cPrices);
 hold off;
 
 %implement BTM for European down-and-out call option
-BTMcdoPrices = 2100 : 2500;
-for N = 2100 : 2500
-    BTMcdoPrices(N - 2099) = BTMEuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma, N);
+BTMcdoPrices = 210 : 250;
+for N = 210 : 250
+    BTMcdoPrices(N - 209) = BTMEuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma, N);
 end
 
 cdoPrice = EuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma);
 
 %plot these call option values aginst N
-plot(2100 : 2500, BTMcdoPrices);
+plot(210 : 250, BTMcdoPrices);
 
 %obtain the errors computed under BTM by comparing against that computed
 %under the Black-Scholes formula
