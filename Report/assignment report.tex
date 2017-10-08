@@ -44,6 +44,12 @@
 % change font to times new roman
 %\usepackage{times}
 
+% add padding to in between paragraphs
+\setlength{\parskip}{1em}
+
+% eliminate indent at start of paragraph
+\setlength\parindent{0pt}
+
 % title details
 \title{QF4102 Financial Modelling and Computation Assignment 1}
 %\date{}
@@ -59,20 +65,80 @@
 
 \section{European down-and-out call option}
 \subsection*{\emph{Statement of the problem}}
-Write a Matlab function for the exact solution of a European down-and-out call option. Your function must be able to \textbf{work with the initial underlier price $S_{0}$ in a vector form}. Obtain the European down-and-out option values for time to maturity of $0.5$ year, strike price of $\$6.5$, underlier's volatility at $30\%$, dividend yield at $0\%$, and risk free rate at $2\%$, and barrier $H = \$7$ for original prices of the underlier from $\$7$ to $\$10$ in increments of $\$0.1$. Obtain also the European down-and-out option values for the case
+Write a Matlab function for the exact solution of a European down-and-out call option. Your function must be able to \textbf{work with the initial underlier price $S_{0}$ in a vector form}. 
+
+Obtain the European down-and-out option values for time to maturity $\tau = 0.5$ year, strike price $S_0 = \$6.5$, underlier's volatility $\sigma = 30\%$, dividend yield $q = 0\%$, and risk free rate $r = 2\%$, and barrier $H = \$7$ for original prices of the underlier from $\$7$ to $\$10$ in increments of $\$0.1$. 
+
+Obtain also the prices of European down-and-out option for the case when $H = \$6$, as well as the prices of European vanilla call option, with the same set of values of $(\tau, S_0, \sigma, q, r)$. Plot all three set of values from European down-and-out option with barrier $H = \$7$ and $H = \$6$, and European vanilla call option, on the same graph.
+
+Implement the binomial tree method for European down-and-out option, fixing $S_0 = \$8$, $H = \$6$, and compute the option values $C_{do}^{N}$ for $N = 210, 211,...,250$. Plot the error $C^{N}_{do} - C_{do}$ against the values of $N$. Obtain the two values of $N$ that yields the minimum erors.
+
 \subsection{Description of work done}
+Using the formula defined on the assignment problem description, we can develop the following algorithm to first calculate the theoretical European down-and-out call option values for the different strike prices $S_0$.
 
+\begin{algorithm}[H]
+ \KwData{$S_0, q, H, X, \tau, r, \sigma$}
+ \KwResult{$C_do$, Option Premium}
+ $\lambda = \dfrac{(r - q)}{\sigma ^ 2}- 0.5$\;
+ $y = \dfrac{\log{[H ^ 2/(XS_0)]}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $x_1 =\dfrac{\log{S_0/H}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $y_1 =\dfrac{\log{H/S_0}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $d_1 =\dfrac{\log{(S_0/X)} + (r-q+\sigma^2 / 2)\tau}{\sigma\sqrt{\tau}}$\;
+ $d_2 = d_1 - \sigma\sqrt{\tau}$\;
+ $C = S_0e^{-q\tau}N(d_1) - X e^{-r\tau}N(d_2)$\;
+ \eIf {$H \leq X$} {
+    $C_do = C - S_0e^{-q\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda}
+      + N(y-\sigma\sqrt{\tau})Xe^{-r\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda-2}$\;
+  }{$C_do = S_0N(x_1)e^{-q\tau}
+      - Xe^{-r\tau}N(x_1-\sigma\sqrt{\tau})
+      - N(y_1)S_0e^{-q\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda} 
+      + N(y_1-\sigma\sqrt{\tau})Xe^{-r\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda-2}$\;
+  }
+\caption{Algorithm for pricing European down-and-out option}
+\end{algorithm}
+
+Then we move on to develop the BTM algorithm for European down-and-out option:
+
+\begin{algorithm}[H]
+ \KwData{$S_0, q, H, X, \tau, r, \sigma$}
+ \KwResult{$C_do$, Option Premium}
+ $\Delta t = \tau / N$\;
+ $\Delta x = \sigma \sqrt{\Delta t}$\;
+ $u = e^{\Delta x}$\;
+ $d = \dfrac{1}{u}$\;
+ $p = \dfrac{e^{(r-q)\Delta t} - d)}{u - d}$\;
+ Initialization\;
+ \For {$i = 0$ to $N$} {
+  $V_{N}^{i} = \max(S_0u^{2j - N} - X, 0)$\;
+ }
+ \For {$n = N-1, N, ... , 1, 0$} {
+  \texttt{\% Get the boundary value of j}\;
+  $b_j =\left \lfloor \dfrac{\log([H/S0])}{2 \Delta x}+ \dfrac{n}{2}\right\rfloor$\;
+ 	\For {$j = 0, 1, ... , N$} {
+ 		\eIf{$j > b_j + 1$}{
+ 			$V_{n}^{j} = e^{-r\Delta t}(p V^{j+1}_{n+1} + (1-p)V^{j}_{n+1})$\;
+ 		}{$V_{n}^{j} = 0$\;}
+ 	}
+ }
+\caption{Algorithm for pricing European down-and-out option}
+\end{algorithm}
 \subsection{Comments on plot of option prices against current underlier price}
-
-\begin{figure}[h]
+We first obtain the plot of option prices against the current underlier price.
+\begin{figure}
 	\centering
 	\includegraphics[scale=0.3]{A1_1_plot.png}
 	\caption{Prices of down-and-out and vanilla call option against current underlier price}
 \end{figure}
 
+From the plot, we can observe that at lower values of $S_0$ the down-and-out option premium is having a larger deviation from the vanilla call option. For the down-and-out option with $H = \$7$, when $S_0=7$, it has a value of $\$0$, and the down-and-out option with $H = \$6$ is having a value of approximately $\$0.75$, while the vanilla option is having a value of near $\$1$. On the contrary, at larger values of $S_0$, the deviation appear to get smaller - the option premium for both down-and-out options converge to the European vanilla call option at large $S_0$. 
+
+This is because as $S_0$ goes up, it has less possibility to fall into a price state that is below the threshold, thus less 0 value in the tree nodes. Hence in the backward iteration stage, we have less difference between the payoff of the down-and-out option and the vanilla option due to the presence of less zeros. Hence, The value at the original time point will be more similar to that of a European vanilla call option.
+
+When we compare across different values of $H$, we can easily observe that the plot of the down-and-out option value with $H=\$6$ is closer to that of the European vanilla call option, compared to the plot of option premium of the down-and-out option with $H = \$7$. The reason is similar to that of the previous case, where if we set the barrier lower, there is less likelihood that the stock price will change and fall below the threshold. Thus, there are less zeros in the binomial tree nodes, and thus the option premium in period 0 is less affected by the barrier, hence more similar to the European vanilla option.
+
 \subsection{Comments on plot of computation errors using BTM against theoretical values}
 
-\begin{figure}[h]
+\begin{figure}
 	\centering
 	\includegraphics[scale=0.3]{A1_4_plot.PNG}
 	\caption{Prices of European down-and-out call against number of time steps}
