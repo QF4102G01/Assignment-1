@@ -118,7 +118,7 @@ Then we move on to develop the BTM algorithm for European down-and-out option:
   \texttt{\% Get the boundary value of j}\;
   $b_j =\left \lfloor \dfrac{\log([H/S0])}{2 \Delta x}+ \dfrac{n}{2}\right\rfloor$\;
  	\For {$j = 0, 1, ... , N$} {
- 		\eIf{$j > b_j + 1$}{
+ 		\eIf{$j > b_j$}{
  			$V_{n}^{j} = e^{-r\Delta t}(p V^{j+1}_{n+1} + (1-p)V^{j}_{n+1})$\;
  		}{$V_{n}^{j} = 0$\;}
  	}
