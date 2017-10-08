@@ -44,6 +44,12 @@
 % change font to times new roman
 %\usepackage{times}
 
+% add padding to in between paragraphs
+\setlength{\parskip}{1em}
+
+% eliminate indent at start of paragraph
+\setlength\parindent{0pt}
+
 % title details
 \title{QF4102 Financial Modelling and Computation Assignment 1}
 %\date{}
@@ -59,8 +65,40 @@
 
 \section{European down-and-out call option}
 \subsection*{\emph{Statement of the problem}}
-Write a Matlab function for the exact solution of a European down-and-out call option. Your function must be able to \textbf{work with the initial underlier price $S_{0}$ in a vector form}. Obtain the European down-and-out option values for time to maturity of $0.5$ year, strike price of $\$6.5$, underlier's volatility at $30\%$, dividend yield at $0\%$, and risk free rate at $2\%$, and barrier $H = \$7$ for original prices of the underlier from $\$7$ to $\$10$ in increments of $\$0.1$. Obtain also the European down-and-out option values for the case
+Write a Matlab function for the exact solution of a European down-and-out call option. Your function must be able to \textbf{work with the initial underlier price $S_{0}$ in a vector form}. 
+
+Obtain the European down-and-out option values for time to maturity $\tau = 0.5$ year, strike price $S_0 = \$6.5$, underlier's volatility $\sigma = 30\%$, dividend yield $q = 0\%$, and risk free rate $r = 2\%$, and barrier $H = \$7$ for original prices of the underlier from $\$7$ to $\$10$ in increments of $\$0.1$. 
+
+Obtain also the prices of European down-and-out option for the case when $H = \$6$, as well as the prices of European vanilla call option, with the same set of values of $(\tau, S_0, \sigma, q, r)$. Plot all three set of values from European down-and-out option with barrier $H = \$7$ and $H = \$6$, and European vanilla call option, on the same graph.
+
+Implement the binomial tree method for European down-and-out option, fixing $S_0 = \$8$, $H = \$6$, and compute the option values $C_{do}^{N}$ for $N = 210, 211,...,250$. Plot the error $C^{N}_{do} - C_{do}$ against the values of $N$. Obtain the two values of $N$ that yields the minimum erors.
+
 \subsection{Description of work done}
+Using the formula defined on the assignment problem description, we can develop the following algorithm to first calculate the theoretical European down-and-out call option values for the different strike prices $S_0$.
+
+\begin{algorithm}[H]
+ \KwData{$S_0, q, H, X, \tau, r, \sigma$}
+ \KwResult{$C_do$, Option Premium}
+ Initialization\;
+ $\lambda = \dfrac{(r - q)}{\sigma ^ 2}- 0.5$\;
+ $y = \dfrac{\log{[H ^ 2/(XS_0)]}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $x_1 =\dfrac{\log{S_0/H}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $y_1 =\dfrac{\log{H/S_0}}{\sigma\sqrt{\tau}} + \lambda\sigma^2\tau$\;
+ $d_1 =\dfrac{\log{(S_0/X)} + (r-q+\sigma^2 / 2)\tau}{\sigma\sqrt{\tau}}$\;
+ $d_2 = d_1 - \sigma\sqrt{\tau}$\;
+ $C = S_0e^{-q\tau}N(d_1) - X e^{-r\tau}N(d_2)$\;
+ \eIf {$H \leq X$} {
+    $C_do = C - S_0e^{-q\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda}
+      + N(y-\sigma\sqrt{\tau})Xe^{-r\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda-2}$\;
+  }{$C_do = S_0N(x_1)e^{-q\tau}
+      - Xe^{-r\tau}N(x_1-\sigma\sqrt{\tau})
+      - N(y_1)S_0e^{-q\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda} 
+      + N(y_1-\sigma\sqrt{\tau})Xe^{-r\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda-2}$\;
+  }
+\caption{Algorithm for pricing European down-and-out option}
+\end{algorithm}
+
+Then we move on to develop the BTM method for European down-and-out option
 
 \subsection{Comments on plot of option prices against current underlier price}
 
@@ -82,11 +120,13 @@ Write a Matlab function for the exact solution of a European down-and-out call o
 
 \section{Eutopean floating strike lookback put option}
 \subsection*{Statement of the problem}
-Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.\\
+Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.
+
 Write also a Matlab function to price European floating strike lookback put option (not newly issued). Test with same parameters with running max of \$$1.3$.
 
 \subsection{Newly issued European floating strike lookback put options}
-For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.\\
+For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.
+
 Since in this case we are only interested in the $A_{t}$ being the maximum value of underlying over time, the binomial updates of $A_{t}$ can be simplied as:
 \begin{equation}
   A_{t}=
@@ -139,7 +179,9 @@ In the previous case we could take advantage of the characteristic of lookback o
 	\item Perform the backward time binomial updates
 	\item Interpolate between two option values at the roots to obtain option premium
 \end{itemize}
-Below is an algorithm developed based on this idea:\\
+
+Below is an algorithm developed based on this idea:
+
 \begin{algorithm}[H]
  \KwData{$r, \sigma, S_{0}, \tau, N, q, \tilde{A}$}
  \KwResult{$p_{0}$, Option Premium}
@@ -165,13 +207,21 @@ Below is an algorithm developed based on this idea:\\
 \newpage
 
 \subsection{Analyze, compare and comment on the results}
-From Figure 6, we can easily observe that as the number of time intervals used in the binomial tree method slowly increases from $200$ to $20000$, the prices obtained for the newly issued floating strike lookback put option monotonically increases from $0.226$ to $0.236$. The rate of increase gradually drops as the price increases, and we see this as an indication that the price obtained is converging to the true value of the option.\\[4mm]
-If the true value is actually around $0.236$, we should be confident that the binomial tree method with single-state modification for the European floating strike lookback put option can almost always give a good estimate of the price since the initially computed price with only $200$ time interval is very close to the true value. However, the closed-form formula does not exist for this case but once we have the finite different equations for the lookback options, the prices from FDM can be used to cross-validate the ones from binomial tree methods.\\[4mm]
-A natural question to ask may be : why are stocks like XOM, GS and FDX still kept within the portfolio? Perhaps it will be more rational if we leave these stocks out, as the weights suggested that these stocks are not preferred over other stocks in the Capital Asset Pricing Model. One simple rationale may answer this: when gold as a commodity for trading has generally lower return compared to stocks, people will still tend to hold gold as a means to hedge against the Equity Market risks. Similar to the gold case, although these stocks may not generate good returns, inclusion of them into the portfolio can help to diversify the risks and effectively reduce portfolio variance.\\[4mm]
+From Figure 6, we can easily observe that as the number of time intervals used in the binomial tree method slowly increases from $200$ to $20000$, the prices obtained for the newly issued floating strike lookback put option monotonically increases from $0.226$ to $0.236$. The rate of increase gradually drops as the price increases, and we see this as an indication that the price obtained is converging to the true value of the option.
+
+If the true value is actually around $0.236$, we should be confident that the binomial tree method with single-state modification for the European floating strike lookback put option can almost always give a good estimate of the price since the initially computed price with only $200$ time interval is very close to the true value. However, the closed-form formula does not exist for this case but once we have the finite different equations for the lookback options, the prices from FDM can be used to cross-validate the ones from binomial tree methods.
+
+A natural question to ask may be : why are stocks like XOM, GS and FDX still kept within the portfolio? Perhaps it will be more rational if we leave these stocks out, as the weights suggested that these stocks are not preferred over other stocks in the Capital Asset Pricing Model. One simple rationale may answer this: when gold as a commodity for trading has generally lower return compared to stocks, people will still tend to hold gold as a means to hedge against the Equity Market risks. Similar to the gold case, although these stocks may not generate good returns, inclusion of them into the portfolio can help to diversify the risks and effectively reduce portfolio variance.
+
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale=0.3]{A2.PNG}
-	\caption{Prices of not newly issued floating strike lookback put against the number of time intervals}
+	\includegraphics[scale=0.3]{A2_ni.PNG}
+	\caption{Prices of newly issued floating strike lookback put against the number of time intervals}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.3]{A2_pi.PNG}
+	\caption{Prices of not previously issued floating strike lookback put against the number of time intervals}
 \end{figure}
 
 \end{document}
