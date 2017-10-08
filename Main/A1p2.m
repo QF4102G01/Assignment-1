@@ -26,12 +26,14 @@ for N = 200:200:20000
 end
 
 %plot the option values against N
-hold on;
 plot(plotting_index, BTM_floatingLBP_ni_values);
-plot(plotting_index, BTM_floatingLBP_pi_values);
-title('Plot of BTM floating strike lookback put option values against number of time steps');
+title({'Plot of newly issued floating strike lookback put option values', ...
+       'obtained by BTM against number of time steps'});
 xlabel('Number of time steps/N');
-ylabel('BTM floating strike lookback put option value');
-legend('Newly issued floating strike lookback put option', ...
-       'Previously issued floating strike lookback put option', ...
-       'Location', 'center');
+ylabel('Newly issued floating strike lookback put option value using BTM');
+figure;
+plot(plotting_index, BTM_floatingLBP_pi_values, 'r');
+title({'Plot of previously issued floating strike lookback put option values', ...
+      'obtained by BTM against number of time steps'});
+xlabel('Number of time steps/N');
+ylabel('Previously issued floating strike lookback put option value');
