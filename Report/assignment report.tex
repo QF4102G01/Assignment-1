@@ -87,7 +87,7 @@ Using the formula defined on the assignment problem description, we can develop 
  $d_1 =\dfrac{\log{(S_0/X)} + (r-q+\sigma^2 / 2)\tau}{\sigma\sqrt{\tau}}$\;
  $d_2 = d_1 - \sigma\sqrt{\tau}$\;
  $C = S_0e^{-q\tau}N(d_1) - X e^{-r\tau}N(d_2)$\;
- \eIf {$H \leq X$} {\textsl{•}
+ \eIf {$H \leq X$} {
     $C_do = C - S_0e^{-q\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda}
       + N(y-\sigma\sqrt{\tau})Xe^{-r\tau}\left(\dfrac{H}{S_0}\right)^{2\lambda-2}$\;
   }{$C_do = S_0N(x_1)e^{-q\tau}
@@ -174,11 +174,13 @@ The two values of $N$ are \textbf{217} and \textbf{239} respectively.
 
 \section{European floating strike lookback put option}
 \subsection*{Statement of the problem}
-Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.\\
+Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.
+
 Write also a Matlab function to price European floating strike lookback put option (not newly issued). Test with same parameters with running max of \$$1.3$.
 
 \subsection{Newly issued European floating strike lookback put options}
-For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.\\
+For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.
+
 Since in this case we are only interested in the $A_{t}$ being the maximum value of underlying over time, the binomial updates of $A_{t}$ can be simplied as:
 \begin{equation}
   A_{t}=
@@ -231,7 +233,8 @@ In the previous case we could take advantage of the characteristic of lookback o
 	\item Perform the backward time binomial updates
 	\item Interpolate between two option values at the roots to obtain option premium
 \end{itemize}
-Below is an algorithm developed based on this idea:\\
+Below is an algorithm developed based on this idea:
+
 \begin{algorithm}[H]
  \KwData{$r, \sigma, S_{0}, \tau, N, q, \tilde{A}$}
  \KwResult{$p_{0}$, Option Premium}
