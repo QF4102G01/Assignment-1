@@ -23,10 +23,12 @@ function optionPrice = BTMEuropeanFloatingLookbackPutNotNew(S0, sigma, q, r, tau
     
     %Backward iterations
 	for i = N-1 : -1 : 0
+        if j-i <= 0
+            ZerothElement = discountFactor * (p * u * W(0 + kshift) + (1-p) * d * W(1 + kshift));
+            W(0 + kshift) = ZerothElement;
+        end
 		k = 1 : 1 : i;
-		ZerothElement = discountFactor * (p * u * W(0 + kshift) + (1-p) * d * W(1 + kshift));
 		W(k + kshift) = discountFactor * (p * u * W(k + kshift - 1) + (1-p) * d * W(k + kshift + 1));
-		W(0 + kshift) = ZerothElement;
 	end
     
     %interpolating between S0W0j and S0W0j+1

@@ -6,27 +6,37 @@ format long
 %prepare the parameters
 S0 = 7:0.1:10;
 q = 0.00;
-H = 7;
+H7 = 7;
 X = 6.5;
 tau = 0.5;
 r = 0.02;
 sigma = 0.3;
 
-%obtain the European down-and-out call option values
-cdoPrices = EuropeanDownAndOutCall(S0, q, H, X, tau, r, sigma);
+%obtain the European down-and-out call option values with H=7
+cdoPrices7 = EuropeanDownAndOutCall(S0, q, H7, X, tau, r, sigma);
 
-%plot these values against S0
-plot(S0, cdoPrices);
-
-hold on;
+%obtain the European down-and-out call option values with H=6
+H6 = 6;
+cdoPrices6 = EuropeanDownAndOutCall(S0, q, H6, X, tau, r, sigma);
 
 %obtain the vanilla European call option values
 cPrices = EuropeanVanillaCall(S0, q, X, tau, r, sigma);
 
-%plot these values on the same graph against S0
+%plot these values against S0
+hold on;
+plot(S0, cdoPrices7);
+plot(S0, cdoPrices6);
 plot(S0, cPrices);
+title('Plot of option values against initial underlier price');
+xlabel('Initial underlier price/S0');
+ylabel('Option value after 0.5 year');
+legend('European down-and-out option with H=7', ...
+       'European down-and-out option with H=6', ...
+       'European vanilla option', ...
+       'Location', 'northwest');
 
-hold off;
+hold off
+figure;
 
 %implement BTM for European down-and-out call option
 BTMcdoPrices = 210 : 250;
@@ -34,10 +44,14 @@ for N = 210 : 250
     BTMcdoPrices(N - 209) = BTMEuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma, N);
 end
 
-cdoPrice = EuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma);
+%plot errors aginst N
+plot(210 : 250, BTMcdoPrices, 'r');
+title('Plot of errors in BTM methods against number of time steps');
+xlabel('Number of time steps/N');
+ylabel('Errors in the result obtained via BTM');
 
-%plot these call option values aginst N
-plot(210 : 250, BTMcdoPrices);
+%obtain cdoPrice using function
+cdoPrice = EuropeanDownAndOutCall(8, q, 6, X, tau, r, sigma);
 
 %obtain the errors computed under BTM by comparing against that computed
 %under the Black-Scholes formula
@@ -55,3 +69,5 @@ minI2 = ceil(log(6 / 8) / (sigma * sqrt(tau / minN2)));
 
 minH2 = 8 * exp(minI2 * sigma * sqrt(tau / minN2));
 
+disp(['First value of N yielding the locally minimum errors is ', num2str(minN1)]);
+disp(['Second value of N yielding the locally minimum errors is ', num2str(minN2)]);
