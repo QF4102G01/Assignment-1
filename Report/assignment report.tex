@@ -146,15 +146,13 @@ When we compare across different values of $H$, we can easily observe that the p
 
 \newpage
 
-\section{Eutopean floating strike lookback put option}
+\section{European floating strike lookback put option}
 \subsection*{Statement of the problem}
-Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.
-
+Write a Matlab function that implements version 1 of the single-state variable binomial tree method for approximating prices of a European floating strike lookback put option (newly issued) with $0.5$ year to maturity, current underlying price of \$1, volatility of $40\%$, dividend yield of $2\%$ and risk free rate of $4\%$. Obtain option value estiamtes for number of time steps $N$ being $200$ to $20000$ in increments of $200$. Obtain a graph of these option values versus $N$.\\
 Write also a Matlab function to price European floating strike lookback put option (not newly issued). Test with same parameters with running max of \$$1.3$.
 
 \subsection{Newly issued European floating strike lookback put options}
-For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.
-
+For the floating strike type of lookback options, we can change from a two-state model to single-state model. We make use of this property $V(A_{t},S_{t},t) = S_{t}V(\frac{A_{t}}{S_{t}}, 1, t)$, and use the new symbol $x_{t} = \ln(\frac{A_{t}}{S_{t}})$ to represent the current state on the binomial tree. Value of the option can thus be represented by $W(x_{t}, t) = \frac{V(exp(x_{t}), 1, t)}{S_{t}}$.\\
 Since in this case we are only interested in the $A_{t}$ being the maximum value of underlying over time, the binomial updates of $A_{t}$ can be simplied as:
 \begin{equation}
   A_{t}=
@@ -207,9 +205,7 @@ In the previous case we could take advantage of the characteristic of lookback o
 	\item Perform the backward time binomial updates
 	\item Interpolate between two option values at the roots to obtain option premium
 \end{itemize}
-
-Below is an algorithm developed based on this idea:
-
+Below is an algorithm developed based on this idea:\\
 \begin{algorithm}[H]
  \KwData{$r, \sigma, S_{0}, \tau, N, q, \tilde{A}$}
  \KwResult{$p_{0}$, Option Premium}
@@ -235,21 +231,25 @@ Below is an algorithm developed based on this idea:
 \newpage
 
 \subsection{Analyze, compare and comment on the results}
-From Figure 6, we can easily observe that as the number of time intervals used in the binomial tree method slowly increases from $200$ to $20000$, the prices obtained for the newly issued floating strike lookback put option monotonically increases from $0.226$ to $0.236$. The rate of increase gradually drops as the price increases, and we see this as an indication that the price obtained is converging to the true value of the option.
-
-If the true value is actually around $0.236$, we should be confident that the binomial tree method with single-state modification for the European floating strike lookback put option can almost always give a good estimate of the price since the initially computed price with only $200$ time interval is very close to the true value. However, the closed-form formula does not exist for this case but once we have the finite different equations for the lookback options, the prices from FDM can be used to cross-validate the ones from binomial tree methods.
-
-A natural question to ask may be : why are stocks like XOM, GS and FDX still kept within the portfolio? Perhaps it will be more rational if we leave these stocks out, as the weights suggested that these stocks are not preferred over other stocks in the Capital Asset Pricing Model. One simple rationale may answer this: when gold as a commodity for trading has generally lower return compared to stocks, people will still tend to hold gold as a means to hedge against the Equity Market risks. Similar to the gold case, although these stocks may not generate good returns, inclusion of them into the portfolio can help to diversify the risks and effectively reduce portfolio variance.
-
+From Figure 3, we can easily observe that as the number of time steps used in the binomial tree method slowly increases from $200$ to $20000$, the prices obtained for the newly issued floating strike lookback put option monotonically increases from \$$0.226$ to \$$0.2364$. The rate of increase gradually drops as the price increases, and we see this as an indication that the price obtained is converging to the true value of the option.\\[4mm]
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.3]{A2_ni.PNG}
-	\caption{Prices of newly issued floating strike lookback put against the number of time intervals}
+	\caption{Prices of newly issued floating strike lookback put against the number of time steps}
 \end{figure}
+If the true value is actually around $0.2364$, we should be confident that the binomial tree method with single-state modification for the European floating strike lookback put option can almost always give a good estimate of the price since the initially computed price with only $200$ time steps is very close to the true value. However, the closed-form formula does not exist for this case but once we have the finite different equations for the lookback options, the prices from FDM can be used to cross-validate the ones from binomial tree methods.\\[4mm]
+Similar to the newly issued lookback put options, the prices of the previously issued lookback puts also tend from around \$$0.3466$ to \$$0.3513$, as shown in figure 4. The increase in price is also montonic and the rate of increase drops as the price increases. If we make the same assumption as for the newly issued puts, i.e. the true value lies around \$$0.3513$, we should be able to observe that value obtained from merely $200$ time steps binomial tree method is at \$$0.3466$ with only difference of \$$0.05$ from the true value.\\[4mm]
+A natural question to ask may be: is this an indication that the binomial tree method may give us even more accurate value for a previously issued lookback put option? However, we shall notice that this may only attribute to the fact of having a relatively large previous running max.\\[4mm]
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.3]{A2_pi.PNG}
-	\caption{Prices of not previously issued floating strike lookback put against the number of time intervals}
+	\caption{Prices of previously issued floating strike lookback put against the number of time steps}
+\end{figure}
+We should then plot them on the same diagram and it is not hard to observe that the two price curves of these two options are very similar. Although their price levels are very different, the curvatures at various time points of the price curves are similar.
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.3]{A2.PNG}
+	\caption{Prices of not newly issued floating strike lookback put against the number of time steps}
 \end{figure}
 
 \end{document}
